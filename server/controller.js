@@ -35,7 +35,7 @@ module.exports = {
         
         create table cities (
           city_id serial primary key,
-          name varchar,
+          name varchar(50),
           rating int,
           country_id int references countries(country_id)
           );
@@ -251,7 +251,8 @@ module.exports = {
       .query(
         `
             insert into cities (name, rating, country_id)
-            values ('${name}', ${rating}, ${countryId});`
+            values ('${name}', ${rating}, ${countryId})
+            returning *;`
       )
       .then((dbRes) => res.status(200).send(dbRes[0]))
       .catch((err) => console.log(err));
@@ -259,10 +260,23 @@ module.exports = {
 
   getCities: (req, res) => {
     sequelize
-      .query(`select * from cities`)
+      .query(
+        `select * from cities
+      where country_id = country_id
+      order by rating desc; `
+      )
       .then((dbRes) => res.status(200).send(dbRes[0]))
       .catch((err) => console.log(err));
   },
 
-  deleteCity: (req, res) => {},
+  deleteCity: (req, res) => {
+    let { cityid } = req.params;
+    sequelize
+      .query(
+        `delete from cities 
+    where city_id = ${cityid};`
+      )
+      .then((dbRes) => res.status(200).send(dbRes[0]))
+      .catch((err) => console.log(err));
+  },
 };
