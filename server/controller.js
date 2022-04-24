@@ -12,6 +12,7 @@ const sequelize = new Sequelize(CONNECTION_STRING, {
   },
 });
 
+const countryId = 2;
 module.exports = {
   getCountries: (req, res) => {
     sequelize
@@ -39,7 +40,7 @@ module.exports = {
           country_id int references countries(country_id)
           );
           
-          insert into countries (name)
+          insert into countries (country)
           values ('Afghanistan'),
           ('Albania'),
           ('Algeria'),
@@ -250,21 +251,18 @@ module.exports = {
       .query(
         `
             insert into cities (name, rating, country_id)
-            values (${name}, ${rating}, ${countryId})`
+            values ('${name}', ${rating}, ${countryId});`
       )
       .then((dbRes) => res.status(200).send(dbRes[0]))
       .catch((err) => console.log(err));
   },
-  //problem 6 says to make the tables join tables where country_id is equal but equal to what its self?
+
   getCities: (req, res) => {
     sequelize
-      .query(
-        `select city_id, city, rating, country_id, country
-    from countries
-    join cities 
-    where country_id = country_id; `
-      )
+      .query(`select * from cities`)
       .then((dbRes) => res.status(200).send(dbRes[0]))
       .catch((err) => console.log(err));
   },
+
+  deleteCity: (req, res) => {},
 };
